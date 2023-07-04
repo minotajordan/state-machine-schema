@@ -18,14 +18,14 @@ Tiene dos estados, waita (el estado inicial) y waitab.
 #lang racket
 
 (define (maquina-simple input)
-  (let loop ((estado 'inicio) (entrada input))
+  (define (recursivo estado entrada)
     (cond
       ; Estado inicial
       ((eq? estado 'inicio)
        (cond
          ((null? entrada) #f)  ; La entrada está vacía, se rechaza
          ((string=? (car entrada) "a")
-          (loop 'waita (cdr entrada)))  ; Transición a waita
+          (recursivo 'waita (cdr entrada)))  ; Transición a waita
          (else #f)))  ; Cualquier otro símbolo, se rechaza
       
       ; Estado w-a
@@ -33,7 +33,7 @@ Tiene dos estados, waita (el estado inicial) y waitab.
        (cond
          ((null? entrada) #t)  ; La entrada se ha consumido por completo, se acepta
          ((string=? (car entrada) "b")
-          (loop 'waitab (cdr entrada)))  ; Transición a waitab
+          (recursivo 'waitab (cdr entrada)))  ; Transición a waitab
          (else #f)))  ; Cualquier otro símbolo, se rechaza
       
       ; Estado w-ab
@@ -41,7 +41,7 @@ Tiene dos estados, waita (el estado inicial) y waitab.
        (cond
          ((null? entrada) #t)  ; La entrada se ha consumido por completo, se acepta
          ((string=? (car entrada) "c")
-          (loop 'wait-n (cdr entrada)))  ; Transición a wait-n
+          (recursivo 'wait-n (cdr entrada)))  ; Transición a wait-n
          (else #f)))  ; Cualquier otro símbolo, se rechaza
       
       ; Estado w-n
@@ -49,13 +49,15 @@ Tiene dos estados, waita (el estado inicial) y waitab.
        (cond
          ((null? entrada) #t)  ; La entrada se ha consumido por completo, se acepta
          (else #f)))  ; Cualquier otro símbolo, se rechaza
-    )
-  )
-)
+    ))
+  
+  (recursivo 'inicio input))
 
 ; Ejemplo de uso
 
 (displayln (maquina-simple '("a" "b" "c")))  ; true
 (displayln (maquina-simple '("a" "b" "d")))  ; false
 (displayln (maquina-simple '("a" "b")))  ; false
+(displayln (maquina-simple '("a" "b" "b" "a" "b" )))  ; true
+
 ```
